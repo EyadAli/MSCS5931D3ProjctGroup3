@@ -6,12 +6,14 @@
   <link rel="stylesheet" href="style.css">
 </head>
 
-<h1>The Tale of Video-Gaming Industry</h1>
+<h1 class="customH1" align="center">The Tale of Video-Gaming Industry</h1>
 
 <hr class="style">
 <body>
+  <!--Loading d3 library-->
+  <script src="http://d3js.org/d3.v3.min.js"></script>
   
-    <div id="option">
+    <div id="option" align="center">
       <input name="Platform"
              type="button"
              value="Platform"
@@ -28,10 +30,8 @@
              onclick="updateData3()"
           />
   </div>
-  
+  <hr class="style" >
   <div id="graphContainer"></div>
-  <!--Loading d3 library-->
-  <script src="http://d3js.org/d3.v3.min.js"></script>
   <script>
 
   // graph dimensions
@@ -51,7 +51,7 @@
 
   //Axes def.
   var xAxis = d3.svg.axis().scale(x)
-    .orient("bottom").ticks(5);
+    .orient("bottom").ticks(10);
   var yAxis = d3.svg.axis().scale(y)
     .orient("left").ticks(5);
   
@@ -75,6 +75,7 @@ console.log("Line Def.");
   console.log("SVG.");
 
  function updateData1() {
+  console.log("Calling updateData1()");
   svg.selectAll("*").remove();
   //Data from the csv file
   d3.csv("vgsalesNFV.csv", function(error, data) {
@@ -84,8 +85,6 @@ console.log("Line Def.");
     d.sales = d.GlobalSales;
 
       });
-  console.log("Code in the call-back function is only executed when the data file loads.");
-  //console.log(data[0]);
 
       // Scaling the data range
       x.domain(d3.extent(data, function(d) { return d.date; }));
@@ -172,13 +171,13 @@ console.log("Line Def.");
         .style("font", "20px times")
         .style("text-anchor", "middle")
         .text("Global sales (in millions)");
-
   });
 }
 
 //*************
 
 function updateData2() {
+  console.log("Calling updateData2()");
   svg.selectAll("*").remove();
   d3.csv("vgsalesNFV.csv", function(error, data) {
       data.forEach(function(d) {
@@ -205,7 +204,7 @@ function updateData2() {
 
     var color = d3.scale.category20();
 
-    legendSpace = 16;
+    legendSpace = 20;
 
     dataNest.forEach(function(d,i) {
 
@@ -218,7 +217,7 @@ function updateData2() {
               .style('opacity', 0);
 
         svg.append("text")
-          .attr("x", width + (margin.right/2) - 30 )
+          .attr("x", width + (margin.right/2) - 40 )
           .attr("y", (legendSpace/2) + i * legendSpace)
           .attr("class", "legend2")   
           .style("fill", function() {
@@ -265,6 +264,7 @@ function updateData2() {
 }
 
 function updateData3() {
+  console.log("Calling updateData1()");
   svg.selectAll("*").remove();
   d3.csv("vgsalesNFV2.csv", function(error, data) {
       data.forEach(function(d) {
@@ -304,7 +304,7 @@ function updateData3() {
 
           // Adding legends
         svg.append("text")
-          .attr("x", width + (margin.right/2) - 30 )
+          .attr("x", width + (margin.right/2) - 50 )
           .attr("y", (legendSpace/2) + i * legendSpace)
           .attr("class", "legend3")   
           .style("fill", function() {
