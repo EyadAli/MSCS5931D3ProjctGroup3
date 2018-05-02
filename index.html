@@ -254,7 +254,7 @@ function updateData2() {
 }
 
 function updateData3() {
-  console.log("Calling updateData1()");
+  console.log("Calling updateData3()");
   svg.selectAll("*").remove();
   d3.csv("vgsalesNFV2.csv", function(error, data) {
       data.forEach(function(d) {
