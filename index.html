@@ -10,6 +10,25 @@
 
 <hr class="style">
 <body>
+  
+    <div id="option">
+      <input name="Platform"
+             type="button"
+             value="Platform"
+             onclick="updateData1()"
+          />
+      <input name="Genre"
+             type="button"
+             value="Genre"
+             onclick="updateData2()"
+          />
+      <input name="Grouped Platform"
+             type="button"
+             value="Company"
+             onclick="updateData3()"
+          />
+  </div>
+  
   <div id="graphContainer"></div>
   <!--Loading d3 library-->
   <script src="http://d3js.org/d3.v3.min.js"></script>
@@ -42,11 +61,6 @@
     .y(function(d) { return y(d.sales); })
     .interpolate("basis");
 
-
-
-  // var salesLine = d3.svg.line()
-  //     .x(function(d) { return x(d.year); })
-  //     .y(function(d) {return y(d.sales); });
 console.log("Line Def.");
  
   // SVG
@@ -60,35 +74,45 @@ console.log("Line Def.");
 
   console.log("SVG.");
 
+ function updateData1() {
+  svg.selectAll("*").remove();
   //Data from the csv file
-  d3.csv("vgsalesNFV.csv", function(error,data) {
-    data.forEach(function(d) {
-      d.date = +d.Year;
-      d.sales = d.GlobalSales;
-    });
+  d3.csv("vgsalesNFV.csv", function(error, data) {
+  //d3.csv("vgsalesNSortedPlat.csv", function(error, data) {
+      data.forEach(function(d) {
+    d.date = +d.Year;
+    d.sales = d.GlobalSales;
 
-
+      });
   console.log("Code in the call-back function is only executed when the data file loads.");
+  //console.log(data[0]);
 
-    // Scaling the data range
-    x.domain(d3.extent(data, function(d) { return d.date; }));
-    y.domain([0, d3.max(data, function(d) { return d.sales; })]);
+      // Scaling the data range
+      x.domain(d3.extent(data, function(d) { return d.date; }));
+      y.domain([0, d3.max(data, function(d) { return d.sales; })]);
 
-    // Nest (Group) the entries by Platform
-    var dataNest = d3.nest()
-        .key(function(d) {return d.Platform;})
-        .entries(data);
-        //console.log(JSON.stringify(dataNest));
 
+
+      // Nest (Group) the entries by Genre
+      var dataNest = d3.nest()
+          .key(function(d) {return d.Platform;})
+          .entries(data);
+
+      dataNest.forEach(function(d) {
+
+          svg.append("path")
+              .attr("class", "line")
+              .attr("d", salesLine(d));
+
+      });
     console.log("Nesting.");
 
     // colors scale
     var color = d3.scale.category20();
-    
+
     // Space between legends
     legendSpace = 12;
-
-    console.log("Setting the space between legends.");
+  console.log("Setting the space between legends.");
 
     // Looping over each Genre / key
     dataNest.forEach(function(d,i) {
@@ -97,11 +121,11 @@ console.log("Line Def.");
               .attr("class", "line")
               .style("stroke", function() { // Dynamically adding the colors
                   return d.color = color(d.key); })
-              .attr("id", 'tag'+d.key.replace(/\s+/g, ''))
+              .attr("id", 'tag'+d.key.replace(/\s+/g, '')) // assign ID **
               .attr("d", salesLine(d.values))
               .style('opacity', 0);
 
-        // Adding legends
+          // Adding legends
         svg.append("text")
           .attr("x", width + (margin.right/2) - 10 )// spacing legends
           .attr("y", (legendSpace/2) + i * legendSpace)
@@ -109,53 +133,224 @@ console.log("Line Def.");
           .style("fill", function() {
               return d.color = color(d.key); })
           .on("click", function(){
-                // Checking for the line status
-                var active = d.active ? false : true,
-                newOpacity = active ? 0 : 1;
-                // Hide or show the element
-                d3.select("#tag" + d.key.replace(/\s+/g, ''))
-                    .transition().duration(100)
-                    . style("opacity", newOpacity);
-                // update elements status
-                 d.active = active; 
-                 })
-              .text(d.key);
+              // Checking for the current line if it is visible
+              var active = d.active ? false : true,
+              newOpacity = active ? 0 : 1;
+              // Hide or show the elements based on the ID
+              d3.select("#tag" + d.key.replace(/\s+/g, ''))
+                  .transition().duration(5)
+                  .style("opacity", newOpacity);
+              // Updating the elements status (active or not)
+              d.active = active;
+              })
+          .text(d.key);
 
-    });
+      });
+      // Add the X Axis
+      svg.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + height + ")")
+          .call(xAxis);
 
-    // Add the X Axis
-    svg.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xAxis);
-    
-    // X Axis lable 
-    svg.append("text")
-        .attr("transform",
-              "translate(" + (width/2) + " ," + (height + margin.top + 20) + ")")
-        .style("text-anchor", "middle")
+      svg.append("text")
+      .attr("transform",
+            "translate(" + (width/2) + " ," + (height + margin.top + 20) + ")")
+      .style("text-anchor", "middle")
+      .style("font", "20px times")
+      .text("Date");
+
+      // Add the Y Axis
+      svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis);
+
+      svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 30 - margin.left)
+        .attr("x",0 - (height / 2))
+        .attr("dy", "1em")
         .style("font", "20px times")
-        .text("Date");
+        .style("text-anchor", "middle")
+        .text("Global sales (in millions)");
 
-    // Add the Y Axis
-    svg.append("g")
-          .attr("class", "y axis")
-          .call(yAxis);
-    
-    // Y Axis lable 
-    svg.append("text")
-          .attr("transform", "rotate(-90)")
-          .attr("y", 30 - margin.left)
-          .attr("x",0 - (height / 2))
-          .attr("dy", "1em")
-          .style("font", "20px times")
-          .style("text-anchor", "middle")
-          .text("Global sales (in millions)");
-
-    console.log("Adding Xs and Ys.");
   });
+}
 
+//*************
+
+function updateData2() {
+  svg.selectAll("*").remove();
+  d3.csv("vgsalesNFV.csv", function(error, data) {
+      data.forEach(function(d) {
+    d.date = +d.Year;
+    d.sales = d.GlobalSales;
+
+      });
+
+      // Scaling the data range
+      x.domain(d3.extent(data, function(d) { return d.date; }));
+      y.domain([0, d3.max(data, function(d) { return d.sales; })]);
+
+      var dataNest = d3.nest()
+          .key(function(d) {return d.Genre;})
+          .entries(data);
+
+      dataNest.forEach(function(d) {
+
+          svg.append("path")
+              .attr("class", "line")
+              .attr("d", salesLine(d));
+
+      });
+
+    var color = d3.scale.category20();
+
+    legendSpace = 16;
+
+    dataNest.forEach(function(d,i) {
+
+        svg.append("path")
+              .attr("class", "line")
+              .style("stroke", function() { 
+                  return d.color = color(d.key); })
+              .attr("id", 'tag'+d.key.replace(/\s+/g, '')) 
+              .attr("d", salesLine(d.values))
+              .style('opacity', 0);
+
+        svg.append("text")
+          .attr("x", width + (margin.right/2) - 30 )
+          .attr("y", (legendSpace/2) + i * legendSpace)
+          .attr("class", "legend2")   
+          .style("fill", function() {
+              return d.color = color(d.key); })
+          .on("click", function(){
+              var active = d.active ? false : true,
+              newOpacity = active ? 0 : 1;
+              d3.select("#tag" + d.key.replace(/\s+/g, ''))
+                  .transition().duration(5)
+                  .style("opacity", newOpacity);
+              d.active = active;
+              })
+          .text(d.key);
+
+      });
+      // Add the X Axis
+      svg.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + height + ")")
+          .call(xAxis);
+
+      svg.append("text")
+      .attr("transform",
+            "translate(" + (width/2) + " ," + (height + margin.top + 20) + ")")
+      .style("text-anchor", "middle")
+      .style("font", "20px times")
+      .text("Date");
+
+      // Add the Y Axis
+      svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis);
+
+      svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 30 - margin.left)
+        .attr("x",0 - (height / 2))
+        .attr("dy", "1em")
+        .style("font", "20px times")
+        .style("text-anchor", "middle")
+        .text("Global sales (in millions)");
+
+  });
+}
+
+function updateData3() {
+  svg.selectAll("*").remove();
+  d3.csv("vgsalesNFV2.csv", function(error, data) {
+      data.forEach(function(d) {
+    d.date = +d.Year;
+    d.sales = d.GlobalSales;
+
+      });
+
+      x.domain(d3.extent(data, function(d) { return d.date; }));
+      y.domain([0, d3.max(data, function(d) { return d.sales; })]);
+
+      var dataNest = d3.nest()
+          .key(function(d) {return d.Company;})
+          .entries(data);
+
+      dataNest.forEach(function(d) {
+
+          svg.append("path")
+              .attr("class", "line")
+              .attr("d", salesLine(d));
+
+      });
+
+    var color = d3.scale.category20();
+
+    legendSpace = 20;
+
+    dataNest.forEach(function(d,i) {
+
+        svg.append("path")
+              .attr("class", "line")
+              .style("stroke", function() { 
+                  return d.color = color(d.key); })
+              .attr("id", 'tag'+d.key.replace(/\s+/g, '')) 
+              .attr("d", salesLine(d.values))
+              .style('opacity', 0);
+
+          // Adding legends
+        svg.append("text")
+          .attr("x", width + (margin.right/2) - 30 )
+          .attr("y", (legendSpace/2) + i * legendSpace)
+          .attr("class", "legend3")   
+          .style("fill", function() {
+              return d.color = color(d.key); })
+          .on("click", function(){
+              var active = d.active ? false : true,
+              newOpacity = active ? 0 : 1;
+              d3.select("#tag" + d.key.replace(/\s+/g, ''))
+                  .transition().duration(5)
+                  .style("opacity", newOpacity);
+              d.active = active;
+              })
+          .text(d.key);
+
+      });
+      // Add the X Axis
+      svg.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + height + ")")
+          .call(xAxis);
+
+      svg.append("text")
+      .attr("transform",
+            "translate(" + (width/2) + " ," + (height + margin.top + 20) + ")")
+      .style("text-anchor", "middle")
+      .style("font", "20px times")
+      .text("Date");
+
+      // Add the Y Axis
+      svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis);
+
+      svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 30 - margin.left)
+        .attr("x",0 - (height / 2))
+        .attr("dy", "1em")
+        .style("font", "20px times")
+        .style("text-anchor", "middle")
+        .text("Global sales (in millions)");
+
+  });
+}
 
   </script>
   </body>
+  <hr class="style">
 </html>
