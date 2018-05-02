@@ -40,13 +40,9 @@
       height = 500 - margin.top - margin.bottom;
       padding = 100;
 
-  console.log("Graph dimensions are set.");
-
   // range
   var x = d3.scale.linear().range([0, width]).clamp(true);
   var y = d3.scale.linear().range([height, 0]).clamp(true);
-
-  console.log("Range.");
 
 
   //Axes def.
@@ -60,8 +56,6 @@
     .x(function(d) { return x(d.date); })
     .y(function(d) { return y(d.sales); })
     .interpolate("basis");
-
-console.log("Line Def.");
  
   // SVG
   var svg = d3.select("#graphContainer")
@@ -71,8 +65,6 @@ console.log("Line Def.");
       .append("g")
         .attr("transform",
               "translate(" + margin.left + "," + margin.top + ")");
-
-  console.log("SVG.");
 
  function updateData1() {
   console.log("Calling updateData1()");
@@ -104,14 +96,12 @@ console.log("Line Def.");
               .attr("d", salesLine(d));
 
       });
-    console.log("Nesting.");
 
     // colors scale
     var color = d3.scale.category20();
 
     // Space between legends
     legendSpace = 12;
-  console.log("Setting the space between legends.");
 
     // Looping over each Genre / key
     dataNest.forEach(function(d,i) {
