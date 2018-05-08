@@ -73,7 +73,7 @@
   console.log("Calling updateData1()");
   svg.selectAll("*").remove();
   //Data from the csv file
-  d3.csv("vgsalesNFV.csv", function(error, data) {
+  d3.csv("vgsalesNFV3.csv", function(error, data) {
   //d3.csv("vgsalesNSortedPlat.csv", function(error, data) {
       data.forEach(function(d) {
     d.date = parse(d.Year);
@@ -172,9 +172,9 @@
 function updateData2() {
   console.log("Calling updateData2()");
   svg.selectAll("*").remove();
-  d3.csv("vgsalesNFV.csv", function(error, data) {
+  d3.csv("vgsalesNFV3.csv", function(error, data) {
       data.forEach(function(d) {
-    d.date = +d.Year;
+    d.date = parse(d.Year);
     d.sales = d.GlobalSales;
 
       });
@@ -259,9 +259,9 @@ function updateData2() {
 function updateData3() {
   console.log("Calling updateData3()");
   svg.selectAll("*").remove();
-  d3.csv("vgsalesNFV2.csv", function(error, data) {
+  d3.csv("vgsalesNFV3.csv", function(error, data) {
       data.forEach(function(d) {
-    d.date = +d.Year;
+    d.date = parse(d.Year);
     d.sales = d.GlobalSales;
 
       });
