@@ -68,7 +68,27 @@
       .append("g")
         .attr("transform",
               "translate(" + margin.left + "," + margin.top + ")");
+  var color1 = d3.scale.ordinal()
+      .domain(["Atari", "Nintendo", "PC" , "Sega" , "SNK" , "SCD" ,
+      "3DO Company" , "Sony" , "Hudson Soft" , "NEC" , "WS" , "Microsoft" ])
+      .range(["#7D2F87", "#F82929" , "#75FF02", "#7FB3D5" , "#0E6308" ,
+      "#AF7AC5" , "#E002FF" , "#024BFF" , "#FA5DF7", "#E59866", "#7DCEA0" , "#000000"] );
 
+  var color2 = d3.scale.ordinal()
+      .domain(["Shooter", "Misc", "Fighting" , "Sports" , "Action" , "Platform" ,
+      "Puzzle" , "Racing" , "Simulation" , "Adventure" , "Role-Playing" , "Strategy" ])
+      .range(["#7D2F87", "#F82929" , "#75FF02", "#7FB3D5" , "#0E6308" , "#AF7AC5" ,
+      "#E002FF" , "#024BFF" , "#FACF90", "#FA6D26", "#000000" , "#7DCEA0"] );
+
+  var color3 = d3.scale.ordinal()
+      .domain([])
+      .range(["#C4E400","#89FFAF","#FFA231","#A147F8","#68BD00","#002D9B",
+              "#FFE230","#0069E5","#CDD101","#EE009D","#00C85D","#F9006F",
+              "#00F4CB","#FF1E49","#01A47A","#4C004F","#A34E00","#B293FF",
+              "#00485B","#FF90D6","#009946","#FF5E35","#02D3C2","#980020",
+              "#B8FFC3","#A5C0FF","#DDBC00","#006CB4","#98A300","#210013",
+              "#A34E00","#02B5E8","#5B3200","#A8DEFF","#3D5700",]);
+    
  function updateData1() {
   console.log("Calling updateData1()");
   svg.selectAll("*").remove();
@@ -100,9 +120,6 @@
 
       });
 
-    // colors scale
-    var color = d3.scale.category20();
-
     // Space between legends
     legendSpace = 12;
 
@@ -112,7 +129,7 @@
         svg.append("path")
               .attr("class", "line")
               .style("stroke", function() { // Dynamically adding the colors
-                  return d.color = color(d.key); })
+                  return d.color = color3(d.key); })
               .attr("id", 'tag'+d.key.replace(/\s+/g, '')) // assign ID **
               .attr("d", salesLine(d.values))
               .style('opacity', 0);
@@ -123,7 +140,7 @@
           .attr("y", (legendSpace/2) + i * legendSpace)
           .attr("class", "legend")   //style the legends
           .style("fill", function() {
-              return d.color = color(d.key); })
+              return d.color = color3(d.key); })
           .on("click", function(){
               // Checking for the current line if it is visible
               var active = d.active ? false : true,
@@ -195,8 +212,6 @@ function updateData2() {
 
       });
 
-    var color = d3.scale.category20();
-
     legendSpace = 20;
 
     dataNest.forEach(function(d,i) {
@@ -204,7 +219,7 @@ function updateData2() {
         svg.append("path")
               .attr("class", "line")
               .style("stroke", function() { 
-                  return d.color = color(d.key); })
+                  return d.color = color2(d.key); })
               .attr("id", 'tag'+d.key.replace(/\s+/g, '')) 
               .attr("d", salesLine(d.values))
               .style('opacity', 0);
@@ -214,7 +229,7 @@ function updateData2() {
           .attr("y", (legendSpace/2) + i * legendSpace)
           .attr("class", "legend2")   
           .style("fill", function() {
-              return d.color = color(d.key); })
+              return d.color = color2(d.key); })
           .on("click", function(){
               var active = d.active ? false : true,
               newOpacity = active ? 0 : 1;
@@ -281,8 +296,6 @@ function updateData3() {
 
       });
 
-    var color = d3.scale.category20();
-
     legendSpace = 20;
 
     dataNest.forEach(function(d,i) {
@@ -290,7 +303,7 @@ function updateData3() {
         svg.append("path")
               .attr("class", "line")
               .style("stroke", function() { 
-                  return d.color = color(d.key); })
+                  return d.color = color1(d.key); })
               .attr("id", 'tag'+d.key.replace(/\s+/g, '')) 
               .attr("d", salesLine(d.values))
               .style('opacity', 0);
@@ -301,7 +314,7 @@ function updateData3() {
           .attr("y", (legendSpace/2) + i * legendSpace)
           .attr("class", "legend3")   
           .style("fill", function() {
-              return d.color = color(d.key); })
+              return d.color = color1(d.key); })
           .on("click", function(){
               var active = d.active ? false : true,
               newOpacity = active ? 0 : 1;
